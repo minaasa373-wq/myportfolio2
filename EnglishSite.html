@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizEnglish Flow - Master Business English</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #e5e7eb; /* Gray 200 */
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            scroll-behavior: smooth;
+        }
+        .accent-cyan { color: #06b6d4; }
+        .bg-accent-cyan { background-color: #06b6d4; }
+        .border-accent-cyan { border-color: #06b6d4; }
+        .card-bg { background-color: #1e1e1e; }
+        .transition-all { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #121212; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header / Navigation -->
+    <nav class="border-b border-gray-800 p-4 sticky top-0 bg-[#121212]/80 backdrop-blur-md z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tighter accent-cyan">BizEnglish <span class="text-white">Flow</span></h1>
+            <div class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="#hero" class="hover:text-cyan-400 transition-colors">Home</a>
+                <a href="#dashboard" class="hover:text-cyan-400 transition-colors">Dashboard</a>
+                <a href="#" class="hover:text-cyan-400 transition-colors">Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="hero" class="py-24 px-4 text-center border-b border-gray-800 bg-gradient-to-b from-[#1a1a1a] to-[#121212]">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">Master Business English, <br><span class="accent-cyan">Step by Step.</span></h2>
+            <p class="text-gray-400 mb-10 text-xl leading-relaxed">
+                明日から会議で使える、即戦力のフレーズ習得に特化した<br class="hidden md:block">プロフェッショナル向けミニマル学習プラットフォーム。
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="scrollToDashboard()" class="bg-accent-cyan text-black font-bold py-4 px-10 rounded-full hover:bg-cyan-300 transition-all transform hover:scale-105 shadow-lg shadow-cyan-900/20">
+                    学習を始める
+                </button>
+                <button class="border border-gray-700 text-white font-bold py-4 px-10 rounded-full hover:bg-gray-800 transition-all">
+                    デモを見る
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="dashboard" class="max-w-6xl mx-auto p-4 md:p-8 flex-grow w-full">
+        <!-- Progress Bar Section -->
+        <div class="mb-16 bg-[#1a1a1a] p-6 rounded-2xl border border-gray-800 shadow-xl">
+            <div class="flex justify-between items-end mb-4">
+                <div>
+                    <h3 class="text-lg font-bold">Your Progress</h3>
+                    <p class="text-sm text-gray-500">継続は力なり。今日の目標まであと少しです。</p>
+                </div>
+                <span id="progress-text" class="text-2xl accent-cyan font-black italic">0%</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+                <div id="progress-bar" class="bg-accent-cyan h-3 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Dashboard / Categories -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+            <button onclick="selectCategory('meetings')" class="category-card card-bg p-8 rounded-2xl border border-gray-800 hover:border-cyan-500 hover:shadow-2xl hover:shadow-cyan-900/10 transition-all text-left group">
+                <div class="mb-6 text-cyan-500 bg-cyan-950/30 w-14 h-14 flex items-center justify-center rounded-xl group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <h3 class="font-bold text-xl mb-1">Meetings</h3>
+                <p class="text-sm text-gray-500">進行・同意・反対</p>
+            </button>
+
+            <button onclick="selectCategory('email')" class="category-card card-bg p-8 rounded-2xl border border-gray-800 hover:border-cyan-500 hover:shadow-2xl hover:shadow-cyan-900/10 transition-all text-left group">
+                <div class="mb-6 text-cyan-500 bg-cyan-950/30 w-14 h-14 flex items-center justify-center rounded-xl group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="font-bold text-xl mb-1">Email</h3>
+                <p class="text-sm text-gray-500">依頼・謝罪・リマインド</p>
+            </button>
+
+            <button onclick="selectCategory('presentations')" class="category-card card-bg p-8 rounded-2xl border border-gray-800 hover:border-cyan-500 hover:shadow-2xl hover:shadow-cyan-900/10 transition-all text-left group">
+                <div class="mb-6 text-cyan-500 bg-cyan-950/30 w-14 h-14 flex items-center justify-center rounded-xl group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <h3 class="font-bold text-xl mb-1">Presentations</h3>
+                <p class="text-sm text-gray-500">導入・図表説明・質疑</p>
+            </button>
+
+            <button onclick="selectCategory('networking')" class="category-card card-bg p-8 rounded-2xl border border-gray-800 hover:border-cyan-500 hover:shadow-2xl hover:shadow-cyan-900/10 transition-all text-left group">
+                <div class="mb-6 text-cyan-500 bg-cyan-950/30 w-14 h-14 flex items-center justify-center rounded-xl group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="font-bold text-xl mb-1">Networking</h3>
+                <p class="text-sm text-gray-500">自己紹介・雑談</p>
+            </button>
+        </div>
+
+        <!-- Content Area -->
+        <div id="content-area" class="hidden space-y-12 fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-gray-800 pb-8">
+                <div>
+                    <h2 id="category-title" class="text-4xl font-black tracking-tight">Category Name</h2>
+                    <p class="text-gray-500 mt-2">よく使われる必須フレーズをマスターしましょう。</p>
+                </div>
+                <div class="relative w-full md:w-80">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                    </span>
+                    <input type="text" id="search-input" placeholder="フレーズを検索..." class="w-full bg-gray-900 border border-gray-700 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all">
+                </div>
+            </div>
+
+            <!-- Phrases Grid -->
+            <div id="phrases-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Cards injected via JS -->
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-10 mt-16">
+                <!-- Roleplay Section -->
+                <div class="xl:col-span-2 card-bg p-10 rounded-3xl border border-gray-800 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8 opacity-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-8 flex items-center">
+                        <span class="bg-cyan-900/50 text-cyan-400 p-2.5 rounded-xl mr-4">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        実践ロールプレイ
+                    </h3>
+                    <div id="roleplay-content" class="space-y-6 text-gray-300 leading-relaxed text-lg">
+                        <!-- Content via JS -->
+                    </div>
+                </div>
+
+                <!-- Tips/Checklist Section -->
+                <div class="bg-cyan-950/10 p-10 rounded-3xl border border-cyan-900/30 shadow-xl">
+                    <h3 class="text-2xl font-bold mb-8 flex items-center accent-cyan">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Business Tips
+                    </h3>
+                    <ul id="checklist-content" class="space-y-6">
+                        <!-- Content via JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 p-12 text-center mt-20">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 class="text-xl font-bold tracking-tighter accent-cyan">BizEnglish Flow</h1>
+            <p class="text-gray-600 text-sm italic">Designed for high-performing professionals worldwide.</p>
+            <div class="flex space-x-6 text-gray-500">
+                <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                <a href="#" class="hover:text-white transition-colors">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded-2xl shadow-2xl border border-gray-700 transform translate-y-32 opacity-0 transition-all duration-500 z-[100] font-bold flex items-center">
+        <svg class="w-5 h-5 mr-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/></svg>
+        <span id="toast-message">Success!</span>
+    </div>
+
+    <script>
+        // Data Configuration
+        const studyData = {
+            meetings: {
+                title: "Meetings",
+                phrases: [
+                    { en: "Let's move on to the next item.", ja: "次の議題へ移りましょう。", tip: "会議の進行をスムーズにするための基本フレーズ。時間を守る姿勢が評価されます。" },
+                    { en: "Could you elaborate on that point?", ja: "その点について詳しく説明いただけますか？", tip: "Elaborateは「詳しく述べる」という意味のフォーマルで非常に便利な単語です。" },
+                    { en: "I see your point, but from my perspective...", ja: "おっしゃることは分かりますが、私の見解では...", tip: "クッション言葉を置くことで、反対意見を述べる際の心理的ハードルを下げます。" },
+                    { en: "Can we reach a consensus on this?", ja: "これについて合意を形成できますか？", tip: "議論をまとめ、意思決定を促す際に非常に効果的です。" }
+                ],
+                roleplay: [
+                    { speaker: "Facilitator", text: "We've covered the sales target. **Let's move on to the next item** on the agenda: the new hiring plan." },
+                    { speaker: "Manager", text: "Wait, **could you elaborate on** the requirements for the Senior Engineer role?" },
+                    { speaker: "Facilitator", text: "**I see your point, but** I think we should focus on the budget first." }
+                ],
+                tips: [
+                    "冒頭でアジェンダの時間を明示する。",
+                    "発言する際は 'If I may...' と手を挙げると丁寧です。",
+                    "自分の理解が正しいか 'Correct me if I'm wrong, but...' で確認する。"
+                ]
+            },
+            email: {
+                title: "Email & Writing",
+                phrases: [
+                    { en: "I'm writing to follow up on our discussion.", ja: "先日の協議のフォローアップとしてご連絡しました。", tip: "話しっぱなしにせず、文書で記録を残す姿勢がプロフェッショナルです。" },
+                    { en: "I would appreciate it if you could...", ja: "〜していただければ幸いです。", tip: "Would appreciate it if... は依頼の際の最も丁寧で標準的な形の一つです。" },
+                    { en: "Please find the attached file for your reference.", ja: "ご参考までに、添付ファイルをご確認ください。", tip: "添付ファイルを指す際は必ずこの一言を添えましょう。" },
+                    { en: "Looking forward to hearing from you soon.", ja: "お返事をお待ちしております。", tip: "結びの言葉として、相手への期待を込めて使われます。" }
+                ],
+                roleplay: [
+                    { speaker: "You", text: "**I'm writing to follow up on** the project timeline we discussed yesterday." },
+                    { speaker: "Client", text: "Thank you for the note. **I would appreciate it if you could** send the final draft by Friday." },
+                    { speaker: "You", text: "Certainly. **Please find the attached** summary for now." }
+                ],
+                tips: [
+                    "件名は「目的＋期限」を記載すると開封率が上がります。",
+                    "挨拶、本題、アクション、結びの4段構成を意識する。",
+                    "宛名はフルネームではなく姓（Mr. Smith）または名（Hi John）で。"
+                ]
+            },
+            presentations: {
+                title: "Presentations",
+                phrases: [
+                    { en: "This chart illustrates the current trend.", ja: "このチャートは現在の傾向を示しています。", tip: "視覚資料を指し示す際は illustrate を使うと説得力が増します。" },
+                    { en: "Let me summarize the key takeaways.", ja: "主要なポイントをまとめさせてください。", tip: "Takeaway（学んだこと・持ち帰るべき要点）はビジネスで多用されます。" },
+                    { en: "Moving on to the next slide...", ja: "次のスライドに移ります...", tip: "スライド間の切り替えを言葉にすることで聴衆の注意を引きます。" },
+                    { en: "Does anyone have any questions so far?", ja: "ここまでのところで、何か質問はありますか？", tip: "セクションごとに確認を入れることで、置き去りにされる聴衆を減らします。" }
+                ],
+                roleplay: [
+                    { speaker: "Presenter", text: "As you can see, **this chart illustrates** a significant growth in Q3." },
+                    { speaker: "Presenter", text: "**Moving on to the next slide**, let's look at the regional data." },
+                    { speaker: "Audience", text: "I have a question about the Asia market." }
+                ],
+                tips: [
+                    "1スライドにつき、メッセージは1つに絞る。",
+                    "アイコンタクトを取り、スライドではなく聴衆に向けて話す。",
+                    "Q&Aの時間を最初から予定に組み込んでおく。"
+                ]
+            },
+            networking: {
+                title: "Networking",
+                phrases: [
+                    { en: "What do you do for a living?", ja: "どのようなお仕事をされていますか？", tip: "単に 'What is your job?' よりも自然でこなれた聞き方です。" },
+                    { en: "I've heard a lot about your company.", ja: "貴社のことは以前から伺っております。", tip: "相手の会社を知っていることを伝えるのは、最大の褒め言葉になります。" },
+                    { en: "How do you like working in this industry?", ja: "この業界でのお仕事はいかがですか？", tip: "Yes/Noで終わらないオープンクエスチョンで会話を広げます。" },
+                    { en: "Let's connect on LinkedIn later.", ja: "後でLinkedInで繋がりましょう。", tip: "現代のネットワーキングにおける名刺交換に代わる締めくくりです。" }
+                ],
+                roleplay: [
+                    { speaker: "Stranger", text: "Hi, I'm Alex from TechFlow. **What do you do for a living?**" },
+                    { speaker: "You", text: "I'm a consultant. **I've heard a lot about your company**'s innovation lately." },
+                    { speaker: "Stranger", text: "That's kind of you. **Let's connect on LinkedIn** to stay in touch." }
+                ],
+                tips: [
+                    "相手の話を遮らず、8割聞き手に回る意識を持つ。",
+                    "自分の「エレベーターピッチ（30秒自己紹介）」を用意しておく。",
+                    "別れ際には必ず感謝を伝える。"
+                ]
+            }
+        };
+
+        let progress = 0;
+
+        function scrollToDashboard() {
+            document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function selectCategory(id) {
+            const data = studyData[id];
+            const area = document.getElementById('content-area');
+            
+            // UI Toggle
+            area.classList.remove('hidden');
+            document.getElementById('category-title').innerText = data.title;
+
+            // Highlight Category Card
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('border-cyan-500', 'ring-2', 'ring-cyan-500/50');
+            });
+            event.currentTarget.classList.add('border-cyan-500', 'ring-2', 'ring-cyan-500/50');
+
+            // Render Phrases
+            const grid = document.getElementById('phrases-grid');
+            grid.innerHTML = '';
+            data.phrases.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = 'card-bg p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition-all flex flex-col justify-between group fade-in';
+                card.style.animationDelay = `${idx * 100}ms`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start gap-4 mb-6">
+                            <h4 class="text-2xl font-bold leading-tight group-hover:accent-cyan transition-colors">${p.en}</h4>
+                            <button onclick="copyPhrase('${p.en}')" class="text-gray-500 hover:text-cyan-400 bg-gray-900 p-2 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012-2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                            </button>
+                        </div>
+                        <p class="text-cyan-400 mb-4 text-base font-bold underline decoration-cyan-900/50 underline-offset-4">${p.ja}</p>
+                        <p class="text-gray-500 text-sm leading-relaxed border-l-2 border-gray-700 pl-4 py-1 italic">${p.tip}</p>
+                    </div>
+                    <button onclick="markAsComplete(this)" class="mt-8 w-full py-3 bg-gray-800 hover:bg-cyan-600 hover:text-white rounded-xl text-sm font-black uppercase tracking-widest transition-all">学習完了</button>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Render Roleplay
+            const roleplayArea = document.getElementById('roleplay-content');
+            roleplayArea.innerHTML = '';
+            data.roleplay.forEach(line => {
+                const div = document.createElement('div');
+                div.className = 'flex gap-6 border-l-4 border-gray-800 pl-6 py-2';
+                div.innerHTML = `
+                    <span class="font-black text-cyan-600 w-24 flex-shrink-0 uppercase text-sm tracking-widest">${line.speaker}</span>
+                    <p class="text-gray-200">${line.text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white border-b-2 border-cyan-500/50 pb-0.5">$1</strong>')}</p>
+                `;
+                roleplayArea.appendChild(div);
+            });
+
+            // Render Checklist
+            const checklistArea = document.getElementById('checklist-content');
+            checklistArea.innerHTML = '';
+            data.tips.forEach(tip => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-4 text-gray-300';
+                li.innerHTML = `
+                    <div class="mt-1 bg-cyan-900/30 p-1 rounded-full">
+                        <svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+                    </div>
+                    <span class="text-sm font-medium leading-relaxed">${tip}</span>
+                `;
+                checklistArea.appendChild(li);
+            });
+
+            // Scroll to view
+            window.scrollTo({
+                top: area.offsetTop - 120,
+                behavior: 'smooth'
+            });
+        }
+
+        function markAsComplete(btn) {
+            if (!btn.disabled) {
+                btn.disabled = true;
+                btn.innerText = "✓ COMPLETED";
+                btn.classList.replace('bg-gray-800', 'bg-cyan-900/30');
+                btn.classList.replace('hover:bg-cyan-600', 'cursor-default');
+                btn.classList.add('text-cyan-400');
+                
+                progress = Math.min(progress + 5, 100);
+                updateProgressUI();
+                showToast("進捗を保存しました！");
+            }
+        }
+
+        function updateProgressUI() {
+            const bar = document.getElementById('progress-bar');
+            const text = document.getElementById('progress-text');
+            bar.style.width = progress + '%';
+            text.innerText = progress + '%';
+        }
+
+        function copyPhrase(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("クリップボードにコピーしました");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-32', 'opacity-0');
+            }, 3000);
+        }
+
+        // Search Logic
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#phrases-grid > div');
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                card.style.display = text.includes(term) ? 'flex' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
