@@ -266,6 +266,8 @@ body {
 
 .name-cell {
   flex: 0 0 50mm;
+  max-width: 50mm;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -282,6 +284,7 @@ body {
 .std-input {
   flex: 1;
   min-width: 0;
+  max-width: 100%;
   font-size: 13px;
   text-align: center;
 }
@@ -511,6 +514,13 @@ body {
   min-height: 14mm;
 }
 
+.cert-bottom-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3px;
+}
+
 .cert-statement {
   font-size: 12px;
   font-weight: 700;
@@ -544,15 +554,14 @@ body {
 }
 
 /* ============================================================
-   次回接種日（枠外）
+   次回接種日（枠内・下部左）
    ============================================================ */
 .next-visit-row {
   display: flex;
   align-items: center;
   gap: 3px;
-  padding: 3px 2px 0;
   font-size: 11px;
-  margin-top: 2px;
+  margin-top: 6mm;
 }
 
 .next-input-year  { width: 38px; font-size: 12px; text-align: center; }
@@ -712,14 +721,13 @@ body {
         <!-- 接種月日 -->
         <div class="vaccine-date-row">
           <div class="date-label">接種<br>月日</div>
-          <input type="text" id="vacYear"  class="field date-input-year"  placeholder="年">
+          <input type="text" id="vacYear"  class="field date-input-year"  placeholder="年" onclick="document.getElementById('vaccinationDate').showPicker()">
           <span class="date-unit">年</span>
           <input type="text" id="vacMonth" class="field date-input-month" placeholder="月">
           <span class="date-unit">月</span>
           <input type="text" id="vacDay"   class="field date-input-day"   placeholder="日">
           <span class="date-unit">日</span>
           <input type="date" id="vaccinationDate" onchange="syncDate()">
-          <button class="cal-btn no-print" onclick="document.getElementById('vaccinationDate').showPicker()">📅</button>
         </div>
 
         <!-- シール＋製造番号 ×2 -->
@@ -745,7 +753,15 @@ body {
 
     <!-- 下部: 証明文＋病院情報 -->
     <div class="cert-bottom">
-      <div class="cert-statement">上記のとおり接種したことを証明します。</div>
+      <div class="cert-bottom-left">
+        <div class="cert-statement">上記のとおり接種したことを証明します。</div>
+        <div class="next-visit-row">
+          次回は
+          <input type="text" id="nextYear"  class="field next-input-year"  placeholder="　　">年
+          <input type="text" id="nextMonth" class="field next-input-short" placeholder="　">月
+          <input type="text" id="nextDay"   class="field next-input-short" placeholder="　">日頃接種してください。
+        </div>
+      </div>
       <div class="cert-statement-block">
         <div class="hospital-block">
           <div class="hospital-name">ガイア動物病院</div>
@@ -756,14 +772,6 @@ body {
     </div>
 
   </div><!-- /cert-main -->
-
-  <!-- 次回接種日（枠外） -->
-  <div class="next-visit-row">
-    次回は
-    <input type="text" id="nextYear"  class="field next-input-year"  placeholder="　　">年
-    <input type="text" id="nextMonth" class="field next-input-short" placeholder="　">月
-    <input type="text" id="nextDay"   class="field next-input-short" placeholder="　">日頃接種してください。
-  </div>
 
 </div><!-- /cert-outer -->
 
