@@ -103,6 +103,29 @@ body {
 .preset-btn:active { background: #444; color: #fff; }
 
 /* 印刷時は非表示 */
+/* カレンダーアイコン（input type=date をアイコンだけ見せる） */
+.cal-icon {
+  width: 28px;
+  height: 24px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  padding: 0;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+/* テキスト部分を非表示にしてアイコンだけ残す */
+.cal-icon::-webkit-datetime-edit         { display: none; }
+.cal-icon::-webkit-inner-spin-button     { display: none; }
+.cal-icon::-webkit-calendar-picker-indicator {
+  font-size: 16px;
+  cursor: pointer;
+  margin: 0 auto;
+  display: block;
+}
+.cal-icon:hover { background: #f0f0f0; }
+
 @media print {
   .preset-panel { display: none; }
 }
@@ -300,20 +323,22 @@ body {
 
 .breed-cell {
   flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 6px;
-}
-
-.name-cell {
-  flex: 0 0 50mm;
-  max-width: 50mm;
   min-width: 0;
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 3px 6px;
+  overflow: hidden;
+}
+
+.name-cell {
+  flex: 0 0 40mm;
+  max-width: 40mm;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px;
   overflow: hidden;
 }
 
@@ -329,6 +354,7 @@ body {
   max-width: 100%;
   font-size: 13px;
   text-align: center;
+  overflow: hidden;
 }
 
 /* ============================================================
@@ -627,7 +653,7 @@ body {
    ============================================================ */
 @media print {
   body { background: white; padding: 0; }
-  .control-panel, .no-print { display: none !important; }
+  .control-panel, .no-print, .cal-icon { display: none !important; }
   .age-unit-select {
     -webkit-appearance: none;
     appearance: none;
@@ -711,9 +737,9 @@ body {
       <div class="species-cell">
         <span class="species-label">種類：</span>
         <div class="check-group">
-          <label class="check-item"><input type="checkbox" id="s-dog"   onchange="speciesCheck('s-dog')">犬</label>
-          <label class="check-item"><input type="checkbox" id="s-cat"   onchange="speciesCheck('s-cat')">猫</label>
-          <label class="check-item"><input type="checkbox" id="s-other" onchange="speciesCheck('s-other')">その他</label>
+          <label class="check-item"><input type="checkbox" id="s-dog"   onclick="speciesCheck('s-dog')">犬</label>
+          <label class="check-item"><input type="checkbox" id="s-cat"   onclick="speciesCheck('s-cat')">猫</label>
+          <label class="check-item"><input type="checkbox" id="s-other" onclick="speciesCheck('s-other')">その他</label>
           <input type="text" id="speciesOther" class="field" placeholder="動物名">
         </div>
       </div>
@@ -787,21 +813,21 @@ body {
           </select>
           <div class="sex-group">
             <span class="row-label">性別：</span>
-            <label class="check-item"><input type="checkbox" id="sex-m" onchange="sexCheck('sex-m')">♂</label>
-            <label class="check-item"><input type="checkbox" id="sex-f" onchange="sexCheck('sex-f')">♀</label>
+            <label class="check-item"><input type="checkbox" id="sex-m" onclick="sexCheck('sex-m')">♂</label>
+            <label class="check-item"><input type="checkbox" id="sex-f" onclick="sexCheck('sex-f')">♀</label>
           </div>
         </div>
 
         <!-- 接種月日 -->
         <div class="vaccine-date-row">
           <div class="date-label">接種<br>月日</div>
-          <input type="text" id="vacYear"  class="field date-input-year"  placeholder="年" onclick="document.getElementById('vaccinationDate').showPicker()">
+          <input type="text" id="vacYear"  class="field date-input-year"  placeholder="年">
           <span class="date-unit">年</span>
           <input type="text" id="vacMonth" class="field date-input-month" placeholder="月">
           <span class="date-unit">月</span>
           <input type="text" id="vacDay"   class="field date-input-day"   placeholder="日">
           <span class="date-unit">日</span>
-          <input type="date" id="vaccinationDate" onchange="syncDate()">
+          <input type="date" id="vaccinationDate" class="cal-icon" onchange="syncDate()" oninput="syncDate()">
         </div>
 
         <!-- シール＋製造番号 ×2 -->
@@ -970,4 +996,102 @@ function submitAndPrint() {
 
   var ny = document.getElementById('nextYear').value.trim();
   var nm = document.getElementById('nextMonth').value.trim();
-  var nd = document.getEleme
+  var nd = document.getElementById('nextDay').value.trim();
+  if (!ny || !nm || !nd) missing.push('次回接種日');
+
+  if (missing.length > 0) {
+    msg.className = 'status-msg error';
+    msg.textContent = '未記入の項目があります：' + missing.join('、');
+    return;
+  }
+
+  // 送信データ
+  var ownerName = document.getElementById('ownerName').value.trim();
+  var petName   = document.getElementById('petName').value.trim();
+  var vacYear   = document.getElementById('vacYear').value.trim();
+  var vacMonth  = document.getElementById('vacMonth').value.trim();
+  var vacDay    = document.getElementById('vacDay').value.trim();
+
+  var payload = {
+    ownerName:       ownerName,
+    address:         document.getElementById('address').value.trim(),
+    species:         document.getElementById('s-dog').checked   ? '犬'
+                   : document.getElementById('s-cat').checked   ? '猫'
+                   : document.getElementById('s-other').checked ? 'その他' : '',
+    speciesOther:    document.getElementById('speciesOther').value.trim(),
+    breed:           document.getElementById('breed').value.trim(),
+    petName:         petName,
+    age:             document.getElementById('age').value.trim() + document.getElementById('ageUnit').value,
+    sex:             document.getElementById('sex-m').checked ? '♂'
+                   : document.getElementById('sex-f').checked ? '♀' : '',
+    vaccinationDate: vacYear + '年' + vacMonth + '月' + vacDay + '日',
+    vaccineA:  document.getElementById('vA').checked,
+    vaccineB:  document.getElementById('vB').checked,
+    vaccineC:  document.getElementById('vC').checked,
+    vaccineD:  document.getElementById('vD').checked,
+    vaccineE:  document.getElementById('vE').checked,
+    vaccineF:  document.getElementById('vF').checked,
+    vaccineG:  document.getElementById('vG').checked,
+    vaccineH:  document.getElementById('vH').checked,
+    vaccineI:  document.getElementById('vI').checked,
+    vaccineJ:  document.getElementById('vJ').checked,
+    vaccineK:  document.getElementById('vK').checked,
+    vaccineL:  document.getElementById('vL').checked,
+    vaccineM:  document.getElementById('vM').checked,
+    vaccineOther: document.getElementById('vaccineOther').value.trim(),
+    lotNo1:    document.getElementById('lotNo1').value.trim(),
+    lotNo2:    document.getElementById('lotNo2').value.trim(),
+    nextVisit: (ny && nm && nd) ? ny + '年' + nm + '月' + nd + '日' : ''
+  };
+
+  btn.disabled = true;
+  msg.className = 'status-msg';
+  msg.textContent = 'スプレッドシートに送信中...';
+
+  fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function() {
+    msg.className = 'status-msg success';
+    msg.textContent = '✓ 記録完了。印刷ダイアログを開きます...';
+    setTimeout(function() { window.print(); }, 800);
+    btn.disabled = false;
+  })
+  .catch(function() {
+    msg.className = 'status-msg error';
+    msg.textContent = '送信エラー。ネットワークを確認してください。';
+    btn.disabled = false;
+  });
+}
+
+/* ----------------------------------------------------------
+   フォームクリア
+   ---------------------------------------------------------- */
+function clearForm() {
+  if (!confirm('入力内容をクリアしますか？')) return;
+
+  // テキスト系
+  ['ownerName','address','breed','petName','age',
+   'vacYear','vacMonth','vacDay','vaccinationDate',
+   'vaccineOther','lotNo1','lotNo2',
+   'nextYear','nextMonth','nextDay','speciesOther'
+  ].forEach(function(id) { document.getElementById(id).value = ''; });
+
+  // チェックボックス全リセット
+  ['s-dog','s-cat','s-other','sex-m','sex-f',
+   'vA','vB','vC','vD','vE','vF','vG',
+   'vH','vI','vJ','vK','vL','vM'
+  ].forEach(function(id) { document.getElementById(id).checked = false; });
+
+  // 「その他」動物名を非表示
+  document.getElementById('speciesOther').style.display = 'none';
+  document.getElementById('ageUnit').value = '歳';
+
+  document.getElementById('statusMsg').textContent = '';
+}
+</script>
+</body>
+</html>
