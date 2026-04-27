@@ -65,11 +65,53 @@ body {
 .status-msg.error   { color: #c0392b; }
 
 /* ============================================================
+   証明書＋ボタンのラッパー
+   ============================================================ */
+.cert-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+  margin: 0 auto;
+}
+
+/* 左側プリセットボタン群 */
+.preset-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.preset-btn {
+  width: 80px;
+  padding: 16px 8px;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-main);
+  border: 2px solid #222;
+  border-radius: 10px;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.3;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  transition: background 0.15s, color 0.15s;
+}
+.preset-btn:hover  { background: #222; color: #fff; }
+.preset-btn:active { background: #444; color: #fff; }
+
+/* 印刷時は非表示 */
+@media print {
+  .preset-panel { display: none; }
+}
+
+/* ============================================================
    証明書外枠 （A5横 210×148mm）
    ============================================================ */
 .cert-outer {
   width: 210mm;
-  margin: 0 auto;
   background: #fff;
   box-shadow: 0 2px 10px rgba(0,0,0,0.15);
   padding: 6mm 6mm 4mm;
@@ -398,8 +440,21 @@ body {
 }
 
 .age-input {
-  width: 52px;
+  width: 28px;
   font-size: 13px;
+  text-align: center;
+}
+
+.age-unit-select {
+  font-size: 11px;
+  font-family: var(--font-main);
+  border: none;
+  border-bottom: var(--border-light);
+  background: transparent;
+  color: var(--color-text);
+  outline: none;
+  cursor: pointer;
+  padding: 0 2px;
 }
 
 .sex-group {
@@ -573,6 +628,11 @@ body {
 @media print {
   body { background: white; padding: 0; }
   .control-panel, .no-print { display: none !important; }
+  .age-unit-select {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 0;
+  }
   .cert-outer {
     box-shadow: none;
     margin: 0;
@@ -596,8 +656,18 @@ body {
 </div>
 
 <!-- ============================================================
-     証明書本体
+     証明書本体（ボタン＋証明書のラッパー）
      ============================================================ -->
+<div class="cert-wrapper">
+
+<!-- 左側プリセットボタン（印刷対象外） -->
+<div class="preset-panel no-print">
+  <button class="preset-btn" onclick="setVaccinePreset('dog5')">犬<br>5種</button>
+  <button class="preset-btn" onclick="setVaccinePreset('dog10')">犬<br>10種</button>
+  <button class="preset-btn" onclick="setVaccinePreset('cat3')">猫<br>3種</button>
+  <button class="preset-btn" onclick="setVaccinePreset('cat4')">猫<br>4種</button>
+</div>
+
 <div class="cert-outer">
 
   <!-- タイトル -->
@@ -710,7 +780,11 @@ body {
         <!-- 年齢・性別 -->
         <div class="age-sex-row">
           <span class="row-label">年齢：</span>
-          <input type="text" id="age" class="field age-input" placeholder="">
+          <input type="text" id="age" class="field age-input" placeholder="" maxlength="2">
+          <select id="ageUnit" class="age-unit-select">
+            <option value="歳">歳</option>
+            <option value="ヶ月">ヶ月</option>
+          </select>
           <div class="sex-group">
             <span class="row-label">性別：</span>
             <label class="check-item"><input type="checkbox" id="sex-m" onchange="sexCheck('sex-m')">♂</label>
@@ -775,12 +849,36 @@ body {
 
 </div><!-- /cert-outer -->
 
+</div><!-- /cert-wrapper -->
+
 <!-- ============================================================
      JavaScript
      ============================================================ -->
 <script>
 // ★ GAS WebアプリのURLをここに貼り付けてください ★
 var GAS_URL = "https://script.google.com/macros/s/AKfycbwX3E82Y2ZmD69mfCKgtFP-rcZmk8fyAZhBG5O1298J6Ndo0m7_ChMkOxYenMgHyX9V/exec";
+
+/* ----------------------------------------------------------
+   ワクチンプリセット
+   ---------------------------------------------------------- */
+var presetMap = {
+  dog5:  ['vA','vB','vC','vD','vE'],
+  dog10: ['vA','vB','vC','vD','vE','vF','vG'],
+  cat3:  ['vH','vI','vJ'],
+  cat4:  ['vH','vI','vJ','vK']
+};
+var allVaccines = ['vA','vB','vC','vD','vE','vF','vG','vH','vI','vJ','vK','vL','vM'];
+
+function setVaccinePreset(type) {
+  // 全チェックをリセット
+  allVaccines.forEach(function(id) {
+    document.getElementById(id).checked = false;
+  });
+  // プリセットをチェック
+  presetMap[type].forEach(function(id) {
+    document.getElementById(id).checked = true;
+  });
+}
 
 /* ----------------------------------------------------------
    種類チェック（1つだけ選択可）
@@ -843,103 +941,33 @@ function submitAndPrint() {
   var msg = document.getElementById('statusMsg');
 
   // 必須チェック
-  var ownerName = document.getElementById('ownerName').value.trim();
-  var petName   = document.getElementById('petName').value.trim();
-  var vacYear   = document.getElementById('vacYear').value.trim();
-  var vacMonth  = document.getElementById('vacMonth').value.trim();
-  var vacDay    = document.getElementById('vacDay').value.trim();
+  var missing = [];
 
-  if (!ownerName || !petName || !vacYear || !vacMonth || !vacDay) {
-    msg.className = 'status-msg error';
-    msg.textContent = '所有者氏名・名前・接種日は必須です。';
-    return;
-  }
+  if (!document.getElementById('ownerName').value.trim()) missing.push('所有者氏名');
+  if (!document.getElementById('address').value.trim())   missing.push('住所');
 
-  // 次回接種日
+  var speciesChecked = document.getElementById('s-dog').checked
+                    || document.getElementById('s-cat').checked
+                    || document.getElementById('s-other').checked;
+  if (!speciesChecked) missing.push('種類');
+
+  var sexChecked = document.getElementById('sex-m').checked
+                || document.getElementById('sex-f').checked;
+  if (!sexChecked) missing.push('性別');
+
+  var vacYear  = document.getElementById('vacYear').value.trim();
+  var vacMonth = document.getElementById('vacMonth').value.trim();
+  var vacDay   = document.getElementById('vacDay').value.trim();
+  if (!vacYear || !vacMonth || !vacDay) missing.push('接種月日');
+
+  var vaccineChecked = ['vA','vB','vC','vD','vE','vF','vG','vH','vI','vJ','vK','vL','vM']
+    .some(function(id) { return document.getElementById(id).checked; });
+  if (!vaccineChecked) missing.push('ワクチン（1つ以上）');
+
+  var lot1 = document.getElementById('lotNo1').value.trim();
+  var lot2 = document.getElementById('lotNo2').value.trim();
+  if (!lot1 && !lot2) missing.push('製造番号');
+
   var ny = document.getElementById('nextYear').value.trim();
   var nm = document.getElementById('nextMonth').value.trim();
-  var nd = document.getElementById('nextDay').value.trim();
-
-  // 送信データ
-  var payload = {
-    ownerName:       ownerName,
-    address:         document.getElementById('address').value.trim(),
-    species:         document.getElementById('s-dog').checked   ? '犬'
-                   : document.getElementById('s-cat').checked   ? '猫'
-                   : document.getElementById('s-other').checked ? 'その他' : '',
-    speciesOther:    document.getElementById('speciesOther').value.trim(),
-    breed:           document.getElementById('breed').value.trim(),
-    petName:         petName,
-    age:             document.getElementById('age').value.trim(),
-    sex:             document.getElementById('sex-m').checked ? '♂'
-                   : document.getElementById('sex-f').checked ? '♀' : '',
-    vaccinationDate: vacYear + '年' + vacMonth + '月' + vacDay + '日',
-    vaccineA:  document.getElementById('vA').checked,
-    vaccineB:  document.getElementById('vB').checked,
-    vaccineC:  document.getElementById('vC').checked,
-    vaccineD:  document.getElementById('vD').checked,
-    vaccineE:  document.getElementById('vE').checked,
-    vaccineF:  document.getElementById('vF').checked,
-    vaccineG:  document.getElementById('vG').checked,
-    vaccineH:  document.getElementById('vH').checked,
-    vaccineI:  document.getElementById('vI').checked,
-    vaccineJ:  document.getElementById('vJ').checked,
-    vaccineK:  document.getElementById('vK').checked,
-    vaccineL:  document.getElementById('vL').checked,
-    vaccineM:  document.getElementById('vM').checked,
-    vaccineOther: document.getElementById('vaccineOther').value.trim(),
-    lotNo1:    document.getElementById('lotNo1').value.trim(),
-    lotNo2:    document.getElementById('lotNo2').value.trim(),
-    nextVisit: (ny && nm && nd) ? ny + '年' + nm + '月' + nd + '日' : ''
-  };
-
-  btn.disabled = true;
-  msg.className = 'status-msg';
-  msg.textContent = 'スプレッドシートに送信中...';
-
-  fetch(GAS_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(function() {
-    msg.className = 'status-msg success';
-    msg.textContent = '✓ 記録完了。印刷ダイアログを開きます...';
-    setTimeout(function() { window.print(); }, 800);
-    btn.disabled = false;
-  })
-  .catch(function() {
-    msg.className = 'status-msg error';
-    msg.textContent = '送信エラー。ネットワークを確認してください。';
-    btn.disabled = false;
-  });
-}
-
-/* ----------------------------------------------------------
-   フォームクリア
-   ---------------------------------------------------------- */
-function clearForm() {
-  if (!confirm('入力内容をクリアしますか？')) return;
-
-  // テキスト系
-  ['ownerName','address','breed','petName','age',
-   'vacYear','vacMonth','vacDay','vaccinationDate',
-   'vaccineOther','lotNo1','lotNo2',
-   'nextYear','nextMonth','nextDay','speciesOther'
-  ].forEach(function(id) { document.getElementById(id).value = ''; });
-
-  // 「その他」動物名を非表示
-  document.getElementById('speciesOther').style.display = 'none';
-
-  // チェックボックス
-  ['s-dog','s-cat','s-other','sex-m','sex-f',
-   'vA','vB','vC','vD','vE','vF','vG',
-   'vH','vI','vJ','vK','vL','vM'
-  ].forEach(function(id) { document.getElementById(id).checked = false; });
-
-  document.getElementById('statusMsg').textContent = '';
-}
-</script>
-</body>
-</html>
+  var nd = document.getEleme
